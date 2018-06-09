@@ -44,7 +44,7 @@
 			</div>
 			<div class="form-group">
 				<label>Automobile Make</label>
-				<input name="make" class="form-control" />
+				<input name="make" class="form-control" type="hidden" />
 			</div>
 			<sec:csrfInput/>
 			<c:if test="${param.error !=null}">

@@ -23,7 +23,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.JstlView;
 @Configuration
 public class NewApplicationConfiguration implements WebMvcConfigurer{
-
+	
+	public static final String DEF_GROUP_AUTHORITIES_BY_USERNAME_QUERY = 
+			"select g.id, g.group_name, ga.authority from groups g, group_members gm, group_authorities ga where gm.username = ? and g.id = ga.group_id and g.id = gm.group_id";
 	@Override
 	public void configureViewResolvers(ViewResolverRegistry registry) {
 		registry.jsp("/WEB-INF/views/", ".jsp").viewClass(JstlView.class);
@@ -51,15 +53,17 @@ public class NewApplicationConfiguration implements WebMvcConfigurer{
 	    public DataSource dataSource() {
 	    	return new EmbeddedDatabaseBuilder()
 	    			.setType(EmbeddedDatabaseType.H2)
-	    			.addScript("schema-h2.sql")
+	    			.addScript("schema2-h2.sql")
 	    			.build();
 	    	 
 	    }
 	    @Bean
 	    @Primary
 	    public UserDetailsService userDetailsServiceJdbc() {
+	    	
 	    	JdbcDaoImpl jdbcDao = new JdbcDaoImpl();
 	    	jdbcDao.setDataSource(this.dataSource());
+	    	//jdbcDao.setGroupAuthoritiesByUsernameQuery(DEF_GROUP_AUTHORITIES_BY_USERNAME_QUERY);
 	    	return jdbcDao;
 	    }
 
