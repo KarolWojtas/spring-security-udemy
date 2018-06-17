@@ -1,5 +1,8 @@
 package com.oreilly.security.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.Priority;
 import javax.sql.DataSource;
 
@@ -15,7 +18,13 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.config.authentication.UserServiceBeanDefinitionParser;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
+import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
@@ -24,8 +33,7 @@ import org.springframework.web.servlet.view.JstlView;
 @Configuration
 public class NewApplicationConfiguration implements WebMvcConfigurer{
 	
-	public static final String DEF_GROUP_AUTHORITIES_BY_USERNAME_QUERY = 
-			"select g.id, g.group_name, ga.authority from groups g, group_members gm, group_authorities ga where gm.username = ? and g.id = ga.group_id and g.id = gm.group_id";
+	
 	@Override
 	public void configureViewResolvers(ViewResolverRegistry registry) {
 		registry.jsp("/WEB-INF/views/", ".jsp").viewClass(JstlView.class);
@@ -50,10 +58,11 @@ public class NewApplicationConfiguration implements WebMvcConfigurer{
 	    return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
 	    }
 	    @Bean
+	    @Primary
 	    public DataSource dataSource() {
 	    	return new EmbeddedDatabaseBuilder()
 	    			.setType(EmbeddedDatabaseType.H2)
-	    			.addScript("schema2-h2.sql")
+	    			.addScript("schema-group-h2.sql")
 	    			.build();
 	    	 
 	    }
@@ -63,8 +72,24 @@ public class NewApplicationConfiguration implements WebMvcConfigurer{
 	    	
 	    	JdbcDaoImpl jdbcDao = new JdbcDaoImpl();
 	    	jdbcDao.setDataSource(this.dataSource());
-	    	//jdbcDao.setGroupAuthoritiesByUsernameQuery(DEF_GROUP_AUTHORITIES_BY_USERNAME_QUERY);
+	    	jdbcDao.setGroupAuthoritiesByUsernameQuery(JdbcDaoImpl.DEF_GROUP_AUTHORITIES_BY_USERNAME_QUERY);
+	    	jdbcDao.setEnableGroups(true);
+	    	
 	    	return jdbcDao;
+	    }
+	    @Bean
+	    @Primary
+	    // Przykład z dokumentacji, mi nie działa do jdbc
+	    public PasswordEncoder passwordEncoders() {
+	    	String idForEncode = "bcrypt";
+	    	Map<String, PasswordEncoder> encoders = new HashMap<>();
+	    	
+	    	encoders.put(idForEncode, new BCryptPasswordEncoder());
+	    	encoders.put("pbkdf2", new Pbkdf2PasswordEncoder());
+	    	encoders.put("scrypt", new SCryptPasswordEncoder());
+	    	DelegatingPasswordEncoder encoder = new DelegatingPasswordEncoder(idForEncode,encoders);
+	    	encoder.setDefaultPasswordEncoderForMatches(encoders.get(idForEncode));
+	    	return encoder;
 	    }
 
 	

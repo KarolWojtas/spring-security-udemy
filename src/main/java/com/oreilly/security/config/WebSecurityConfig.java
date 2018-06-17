@@ -1,33 +1,30 @@
 package com.oreilly.security.config;
 
-import javax.servlet.FilterConfig;
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.access.AccessDeniedHandlerImpl;
+import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
 import com.oreilly.security.services.CustomAuthenticationFilter;
-import com.oreilly.security.services.CustomUserDetailsService;
+
 @EnableWebSecurity
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled=true)
@@ -36,6 +33,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	private AuthenticationProvider provider;
 	@Autowired
 	private UserDetailsService userService;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	public WebSecurityConfig() {
 		// TODO Auto-generated constructor stub
 	}
@@ -62,7 +61,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	                	.logoutSuccessUrl("/login?logout=true")
 	                .and()
 	               // .addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-	                .userDetailsService(userService)
+	                //.userDetailsService(userService)
 	                	.csrf()
 	                	.disable()
 	                .headers()
@@ -71,6 +70,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	                .exceptionHandling()
 	                	//.authenticationEntryPoint(loginEntryPoint())
 	                	.accessDeniedPage("/login")
+	                
+	                
 	             	;
 	        
 	    }
@@ -106,10 +107,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	    @Override
 	    protected void configure(
 	      AuthenticationManagerBuilder auth) throws Exception {
-	  
-	        auth.authenticationProvider(provider);
+	    	//Wykomentowane żeby nie było lipy
+	       // auth.authenticationProvider(provider);
+	        auth.jdbcAuthentication()
+	        	.dataSource(dataSource())
+	        	.groupAuthoritiesByUsername(JdbcDaoImpl.DEF_GROUP_AUTHORITIES_BY_USERNAME_QUERY)
+	        	.passwordEncoder(passwordEncoder)
+	        	
+	        	
+	        	;
 	        
 	    }
+	    @Bean
+	    @Primary
+	    public DataSource dataSource() {
+	    	return  new EmbeddedDatabaseBuilder()
+	    			.addScript("schema-group-h2.sql")
+	    			.setType(EmbeddedDatabaseType.H2)
+	    			.build();
+	    	 
+	    }
+	  
 	   
 	    
 }
