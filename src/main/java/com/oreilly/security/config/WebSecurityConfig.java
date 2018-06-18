@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -18,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -28,6 +30,7 @@ import com.oreilly.security.services.CustomAuthenticationFilter;
 @EnableWebSecurity
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled=true)
+@ComponentScan(basePackages= {"com.oreilly.security"})
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	@Autowired
 	private AuthenticationProvider provider;
@@ -35,6 +38,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	private UserDetailsService userService;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private UserDetailsContextMapper userDetailsContextMapper;
 	public WebSecurityConfig() {
 		// TODO Auto-generated constructor stub
 	}
@@ -113,8 +118,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	    				.managerDn("uid=admin,ou=system")
 	    				.managerPassword("secret")
 	    			.and()
-	    				.userDnPatterns("uid={0},ou=people")
+	    				//.userDnPatterns("uid={0},ou=people")
+	    				.userSearchFilter("(uid={0})")
 	    				.groupSearchBase("ou=groups")
+	    				.userDetailsContextMapper(userDetailsContextMapper)
 	    				
 	        	;
 	        
