@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -50,7 +51,7 @@ public class AutoUser implements UserDetails {
 	private Collection<? extends GrantedAuthority> authorities;
 
 	@JsonIgnore
-	@OneToMany(mappedBy="user", cascade=CascadeType.PERSIST)
+	@OneToMany(mappedBy="user", cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	private List<Appointment> appointments = new ArrayList<Appointment>();
 	
 	public String getFirstName() {
@@ -164,5 +165,7 @@ public class AutoUser implements UserDetails {
 		// TODO Auto-generated method stub
 		return true;
 	}
+	
+
 
 }

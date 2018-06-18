@@ -2,7 +2,9 @@ package com.oreilly.security.domain.entities;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -16,6 +18,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -34,7 +38,7 @@ public class Appointment {
 	private Long appointmentId;
 
 	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
-	@JoinColumn(name = "USER_ID")
+	@JoinColumn(name = "AUTO_USER_ID")
 	private AutoUser user;
 
 	@Embedded
@@ -47,9 +51,12 @@ public class Appointment {
 
 	//@ElementCollection(fetch = FetchType.EAGER)
 	//@CollectionTable(name = "SERVICES", joinColumns = { @JoinColumn(name = "APPOINTMENT_ID") })
-	@Column(name = "NAME")
-	@OneToMany(fetch=FetchType.EAGER)
-	private List<Service> services = new ArrayList<Service>();
+	@ManyToMany(cascade=CascadeType.ALL)
+	@JoinTable(name="APPOINTMENT_SERVICES", 
+				joinColumns= @JoinColumn(referencedColumnName="APPOINTMENT_ID", name="ID_APPOINTMENT"),
+				inverseJoinColumns= @JoinColumn(referencedColumnName="SERVICE_ID", name="ID_SERVICE"))
+	
+	private Set<Service> services = new HashSet<>();
 
 	@Column(name = "STATUS")
 	private String status;
@@ -67,6 +74,7 @@ public class Appointment {
 	}
 
 	public void setUser(AutoUser user) {
+		
 		this.user = user;
 	}
 
@@ -86,11 +94,12 @@ public class Appointment {
 		this.appointmentDt = appointmentDt;
 	}
 
-	public List<Service> getServices() {
+
+	public Set<Service> getServices() {
 		return services;
 	}
 
-	public void setServices(List<Service> services) {
+	public void setServices(Set<Service> services) {
 		this.services = services;
 	}
 
@@ -101,5 +110,5 @@ public class Appointment {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
+	
 }

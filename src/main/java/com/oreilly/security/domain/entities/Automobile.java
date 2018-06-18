@@ -3,7 +3,12 @@ package com.oreilly.security.domain.entities;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 @Embeddable
+@AllArgsConstructor
+@NoArgsConstructor
 public class Automobile {
 
 	@Column(name = "MAKE")

@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
@@ -60,10 +61,19 @@
 			</li>
 			<li class="list-group-item"><label>Status:</label><span>${appointment.status}</span>
 			<li class="list-group-item">
+				
 				<a class="btn btn-default" href="<spring:url value="/appointments/"/>" role="button">Back</a>	
-				<a class="btn btn-default" href="<spring:url value="/appointments/cancel"/>" role="button">Cancel</a>
-				<a class="btn btn-default" href="<spring:url value="/appointments/confirm"/>" role="button">Confirm</a>
-				<a class="btn btn-default" href="<spring:url value="/appointments/complete"/>" role="button">Mark Complete</a>
+				<sec:authorize access="hasRole('ROLE_ADMIN')">
+					<a class="btn btn-default" href="<spring:url value="/appointments/cancel"/>" role="button">Cancel</a>
+				</sec:authorize>
+				<sec:authorize access="${isUser}">
+					<a class="btn btn-default" href="<spring:url value="/appointments/confirm"/>" role="button">Confirm</a>
+				</sec:authorize>
+				<c:out value="${isUser }"></c:out>
+				<sec:authorize url="/schedule/">
+					<a class="btn btn-default" href="<spring:url value="/appointments/complete"/>" role="button">Mark Complete</a>	
+				</sec:authorize>
+				
 			</li>
 		</ul>
 	</div>

@@ -42,7 +42,7 @@ public class NewApplicationConfiguration implements WebMvcConfigurer{
 	}
 	 @Override
 	    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-	        registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+	        registry.addResourceHandler("/src/main/webapp/**").addResourceLocations("/src/main/webapp");
 	        
 	    }
 	    @Bean
