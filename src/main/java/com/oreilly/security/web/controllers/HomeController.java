@@ -45,6 +45,7 @@ public class HomeController {
 	}
 	@RequestMapping("/schedule")
 	public String goSchedule(){
+		
 		return "schedule";
 	}
 	@GetMapping("/register")

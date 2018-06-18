@@ -48,10 +48,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	        http
 	            .authorizeRequests()
 	            
-	            	.antMatchers("/appointments/").hasAnyRole("USER","ADMIN")
-	            	.antMatchers("/schedule/").hasAnyRole("ADMIN")
+	            	.antMatchers("/appointments/").access("hasRole('ADMIN') or hasRole('USER')")
+	            	.antMatchers("/schedule/").access("hasAuthority('ROLE_ADMIN')")//.access("principal.username == 'kbowersox'")
 	            	.antMatchers("/h2-console").permitAll()
-	            	.antMatchers("/**").permitAll()
+	            	.antMatchers("/**").access("permitAll")//.access("hasAnyRole('ANONYMOUS','USER','ADMIN')")
 	                .and()
 	                .formLogin()
 	                	.loginPage("/login")

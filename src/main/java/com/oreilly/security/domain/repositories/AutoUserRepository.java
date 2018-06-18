@@ -7,4 +7,5 @@ import com.oreilly.security.domain.entities.AutoUser;
 
 public interface AutoUserRepository extends CrudRepository<AutoUser, Long> {
 	public AutoUser findByUsername(String username);
+	public AutoUser findByUsernameIsLike(String word);
 }
