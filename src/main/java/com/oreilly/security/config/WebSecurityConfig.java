@@ -46,7 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	            	.antMatchers("/appointments/").hasAnyRole("USER","ADMIN")
 	            	.antMatchers("/schedule/").hasAnyRole("ADMIN")
 	            	.antMatchers("/h2-console").permitAll()
-	            	.antMatchers("/**").hasAnyRole("ANONYMOUS","USER","ADMIN")
+	            	.antMatchers("/**").permitAll()
 	                .and()
 	                .formLogin()
 	                	.loginPage("/login")
@@ -60,15 +60,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	                	.logoutUrl("/logout")
 	                	.logoutSuccessUrl("/login?logout=true")
 	                .and()
-	               // .addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-	                //.userDetailsService(userService)
+	             
 	                	.csrf()
 	                	.disable()
 	                .headers()
 	                	.frameOptions().disable()
 	                .and()
 	                .exceptionHandling()
-	                	//.authenticationEntryPoint(loginEntryPoint())
+	                	
 	                	.accessDeniedPage("/login")
 	                
 	                
@@ -107,14 +106,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	    @Override
 	    protected void configure(
 	      AuthenticationManagerBuilder auth) throws Exception {
-	    	//Wykomentowane żeby nie było lipy
-	       // auth.authenticationProvider(provider);
-	        auth.jdbcAuthentication()
-	        	.dataSource(dataSource())
-	        	.groupAuthoritiesByUsername(JdbcDaoImpl.DEF_GROUP_AUTHORITIES_BY_USERNAME_QUERY)
-	        	.passwordEncoder(passwordEncoder)
-	        	
-	        	
+	    		auth.ldapAuthentication()
+	    			.contextSource()
+	    				.port(10389)
+	    				.root("dc=oreilly,dc=com")
+	    				.managerDn("uid=admin,ou=system")
+	    				.managerPassword("secret")
+	    			.and()
+	    				.userDnPatterns("uid={0},ou=people")
+	    				.groupSearchBase("ou=groups")
+	    				
 	        	;
 	        
 	    }

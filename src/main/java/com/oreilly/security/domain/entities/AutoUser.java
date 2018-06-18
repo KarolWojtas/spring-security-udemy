@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -45,6 +46,8 @@ public class AutoUser implements UserDetails {
 	
 	@Column(name = "ROLE")
 	private String role;
+	@Transient
+	private Collection<? extends GrantedAuthority> authorities;
 
 	@JsonIgnore
 	@OneToMany(mappedBy="user", cascade=CascadeType.PERSIST)
@@ -127,11 +130,15 @@ public class AutoUser implements UserDetails {
 		return "AutoUser [autoUserId=" + autoUserId + ", firstName=" + firstName + ", lastName=" + lastName
 				+ ", username=" + username + ", password=" + password + ", email=" + email + ", role=" + role + "]";
 	}
+	
+	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
+		this.authorities = authorities;
+	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		// TODO Auto-generated method stub
-		return AuthorityUtils.createAuthorityList(this.role);
+		return this.authorities;
 	}
 
 	@Override
