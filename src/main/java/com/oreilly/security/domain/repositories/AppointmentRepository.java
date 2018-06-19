@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import com.oreilly.security.domain.entities.Appointment;
 import com.oreilly.security.domain.entities.AutoUser;
 
-public interface AppointmentRepository extends CrudRepository<Appointment, Long> {
+public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 	public List<Appointment> findByUser(@Param("user") AutoUser user);
+
 }

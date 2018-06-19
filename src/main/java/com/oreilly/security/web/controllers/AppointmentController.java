@@ -1,18 +1,22 @@
 package com.oreilly.security.web.controllers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +26,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.oreilly.security.domain.entities.Appointment;
 import com.oreilly.security.domain.entities.AutoUser;
 import com.oreilly.security.domain.entities.Service;
+import com.oreilly.security.domain.entities.util.AppointmentUtils;
 import com.oreilly.security.domain.repositories.AppointmentRepository;
 import com.oreilly.security.domain.repositories.AutoUserRepository;
 import com.oreilly.security.domain.repositories.ServiceRepository;
+
+import javassist.expr.NewArray;
 
 
 @Controller()
@@ -37,6 +44,8 @@ public class AppointmentController {
 	private AutoUserRepository autoUserRepository;
 	@Autowired
 	private ServiceRepository serviceRepository;
+	@Autowired
+	private AppointmentUtils util;
 	@ModelAttribute
 	public Appointment getAppointment(){
 		return new Appointment();
@@ -62,9 +71,10 @@ public class AppointmentController {
 	
 	@ResponseBody
 	@RequestMapping("/all")
+	@PostFilter("authentication.principal.username == filterObject.user.username")
 	public List<Appointment> getAppointments(Authentication auth){
 		AutoUser savedUser = autoUserRepository.findByUsername(auth.getName());
-		return appointmentRepository.findByUser(savedUser);
+		return appointmentRepository.findAll();
 	}
 
 	@RequestMapping("/{appointmentId}")
@@ -79,6 +89,21 @@ public class AppointmentController {
 		List<Appointment> appointments = new ArrayList<>();
 		appointmentRepository.findAll().iterator().forEachRemaining(appointments::add);
 		return appointments;
+	}
+	@GetMapping("/test")
+	@ResponseBody
+	public String testPrefilter(Authentication auth) {
+		AutoUser user = (AutoUser) auth.getPrincipal();
+		AutoUser otherUser = new AutoUser();
+		otherUser.setEmail("haxor@gmail.com");
+		otherUser.setUsername("otherUser");
+		
+		return util.saveAll(new ArrayList<Appointment>() {
+			{
+				add(AppointmentUtils.createAppointment(otherUser));
+				add(AppointmentUtils.createAppointment(user));
+			}
+		});
 	}
 	@ResponseBody
 	@RequestMapping("/confirm")

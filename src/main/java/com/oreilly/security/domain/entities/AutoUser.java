@@ -122,6 +122,14 @@ public class AutoUser implements UserDetails {
 		this.appointments = appointments;
 	}
 
+	public Long getAutoUserId() {
+		return autoUserId;
+	}
+
+	public void setAutoUserId(Long autoUserId) {
+		this.autoUserId = autoUserId;
+	}
+
 	public AutoUser() {
 		super();
 	}
