@@ -28,6 +28,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.oreilly.security.domain.entities.util.LocalDateConverter;
 
+import lombok.ToString;
+
 @Entity
 @Table(name = "APPOINTMENT")
 public class Appointment {
@@ -109,6 +111,11 @@ public class Appointment {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	@Override
+	public String toString() {
+		return "Appointment [appointmentId=" + appointmentId + "]";
 	}
 	
 }

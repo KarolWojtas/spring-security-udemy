@@ -2,6 +2,7 @@ package com.oreilly.security;
 
 import java.util.Collection;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,9 +11,16 @@ import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 import org.springframework.stereotype.Component;
 
 import com.oreilly.security.domain.entities.AutoUser;
+import com.oreilly.security.domain.repositories.AutoUserRepository;
 @Component
 public class CustomUserDetailsContextMapper implements UserDetailsContextMapper{
-
+	private AutoUserRepository autoUserRepository;
+	
+	@Autowired
+	public CustomUserDetailsContextMapper(AutoUserRepository autoUserRepository) {
+		super();
+		this.autoUserRepository = autoUserRepository;
+	}
 
 	@Override
 	public UserDetails mapUserFromContext(DirContextOperations ctx, String username,

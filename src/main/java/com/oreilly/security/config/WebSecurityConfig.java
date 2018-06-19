@@ -29,7 +29,7 @@ import com.oreilly.security.services.CustomAuthenticationFilter;
 
 @EnableWebSecurity
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled=true)
+@EnableGlobalMethodSecurity(prePostEnabled=true, jsr250Enabled=true)
 @ComponentScan(basePackages= {"com.oreilly.security"})
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	@Autowired
@@ -49,7 +49,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	            .authorizeRequests()
 	            
 	            	.antMatchers("/appointments/").access("hasRole('ADMIN') or hasRole('USER')")
-	            	.antMatchers("/schedule/").access("hasAuthority('ROLE_ADMIN')")//.access("principal.username == 'kbowersox'")
+	            	.antMatchers("/schedule/")/*.access("hasAuthority('ROLE_ADMIN')")*/.access("authentication.name == 'kbowersox'")
 	            	.antMatchers("/h2-console").permitAll()
 	            	.antMatchers("/**").access("permitAll")//.access("hasAnyRole('ANONYMOUS','USER','ADMIN')")
 	                .and()

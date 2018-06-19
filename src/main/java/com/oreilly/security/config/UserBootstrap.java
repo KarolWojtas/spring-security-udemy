@@ -46,8 +46,7 @@ public class UserBootstrap implements CommandLineRunner{
 		Service bulb = new Service("Bulb Change");
 		serviceRepository.saveAll(Arrays.asList(oil,tire, bulb, antifreeze));
 		populateAppointments(oil, kevinM,janeD);
-		//AutoUser userLike = repository.findByUsernameIsLike("_adoe");
-		//System.out.println(userLike);
+		
 		
 		
 	}
