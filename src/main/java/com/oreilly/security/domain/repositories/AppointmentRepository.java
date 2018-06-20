@@ -5,6 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.oreilly.security.domain.entities.Appointment;
 
-public interface AppointmentRepository extends CrudRepository<Appointment, Long> {
+public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
+
 
 }

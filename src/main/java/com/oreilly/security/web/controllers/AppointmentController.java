@@ -3,6 +3,8 @@ package com.oreilly.security.web.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -63,7 +65,7 @@ public class AppointmentController {
 	}
 
 	@RequestMapping("/{appointmentId}")
-	@PostAuthorize("hasPermission(#model['appointment'],'read')")
+	@PostAuthorize("hasPermission(#model['appointment'],1)")
 	public String getAppointment(@PathVariable("appointmentId") Long appointmentId, Model model){
 		Appointment appointment = appointmentRepository.findById(appointmentId).get();
 		model.addAttribute("appointment", appointment);
@@ -73,6 +75,25 @@ public class AppointmentController {
 		List<Appointment> appointments = new ArrayList<>();
 		appointmentRepository.findAll().iterator().forEachRemaining(appointments::add);
 		return appointments;
+	}
+	@ResponseBody
+	@RequestMapping("/confirm/{appointmentId}")
+	@PostAuthorize("hasPermission(returnObject,'administration')")
+	public Appointment confirm(@PathVariable Long appointmentId) {
+		return this.appointmentRepository.findById(appointmentId).orElseThrow(RuntimeException::new);
+	}
+
+	@ResponseBody
+	@RequestMapping("/cancel")
+	public String cancel() {
+		return "cancelled";
+	}
+
+	@ResponseBody
+	@RequestMapping("/complete")
+	@RolesAllowed("ROLE_ADMIN")
+	public String complete() {
+		return "completed";
 	}
 	
 }

@@ -54,17 +54,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 
-				.antMatchers("/appointments/").hasAnyRole("USER", "ADMIN").antMatchers("/schedule/").hasAnyRole("ADMIN")
+				.antMatchers("/appointments/*").hasAnyRole("USER", "ADMIN").antMatchers("/schedule/").hasAnyRole("ADMIN")
 				.antMatchers("/h2-console").permitAll().antMatchers("/**").hasAnyRole("ANONYMOUS", "USER", "ADMIN")
 				.and()
-				/*
-				 * .formLogin() .loginPage("/login") .loginProcessingUrl("/login")
-				 * .usernameParameter("custom_username") .passwordParameter("custom_password")
-				 * .defaultSuccessUrl("/appointments/") .failureUrl("/login?error=true")
-				 */
-				// .and()
+				
+				  .formLogin() .loginPage("/login") .loginProcessingUrl("/login")
+				  .usernameParameter("custom_username") .passwordParameter("custom_password")
+				  .defaultSuccessUrl("/appointments/") .failureUrl("/login?error=true")
+				 
+				 .and()
 				.logout().logoutUrl("/logout").logoutSuccessUrl("/login?logout=true").and()
-				.addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+				//.addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 				.userDetailsService(userService).csrf().disable().headers().frameOptions().disable().and()
 				.exceptionHandling().authenticationEntryPoint(loginEntryPoint()).accessDeniedPage("/login");
 

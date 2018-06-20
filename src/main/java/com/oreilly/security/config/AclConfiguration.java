@@ -1,14 +1,15 @@
 package com.oreilly.security.config;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.acls.AclPermissionCacheOptimizer;
 import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl;
@@ -23,16 +24,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 
 @Configuration
-@EnableGlobalMethodSecurity(securedEnabled=true)
-public class AclConfiguration{
+@EnableGlobalMethodSecurity(jsr250Enabled=true, prePostEnabled=true)
+public class AclConfiguration {
 	
+	@Autowired
+	DataSource dataSource;
 	@Bean
-	public DataSource dataSource() {
-		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
-
-	}
-	@Bean
-	DefaultMethodSecurityExpressionHandler expressionHandler() {
+	MethodSecurityExpressionHandler createExpressionHandler() {
 		DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
 		expressionHandler.setPermissionCacheOptimizer(permissionCacheOptimizer());
 		expressionHandler.setPermissionEvaluator(permissionEvaluator());
@@ -40,11 +38,12 @@ public class AclConfiguration{
 	}
 	@Bean
 	public SimpleGrantedAuthority adminAuthority() {
-		return new SimpleGrantedAuthority("ROLE_ADMIN");
+		return new SimpleGrantedAuthority("ROLE_ADMINISTRATOR");
 	}
 	@Bean
 	public AclAuthorizationStrategyImpl aclAuthStrategy() {
-		return new AclAuthorizationStrategyImpl(adminAuthority());
+		return new AclAuthorizationStrategyImpl(adminAuthority()
+				);
 	}
 	@Bean
 	public ConsoleAuditLogger auditLogger() {
@@ -70,12 +69,14 @@ public class AclConfiguration{
 	}
 	@Bean
 	BasicLookupStrategy lookupStrategy() {
-		return new BasicLookupStrategy(dataSource(), aclCache(), aclAuthStrategy(), auditLogger());
+		return new BasicLookupStrategy(dataSource//dataSource()
+				, aclCache(), aclAuthStrategy(), auditLogger());
 	}
 	@Bean
 	JdbcMutableAclService aclService() {
-		return new JdbcMutableAclService(dataSource(), lookupStrategy(), aclCache());
+		return new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
 	}
+	
 	@Bean
 	AclPermissionEvaluator permissionEvaluator() {
 		return new AclPermissionEvaluator(aclService());

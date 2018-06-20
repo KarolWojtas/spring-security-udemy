@@ -12,12 +12,12 @@ import javax.persistence.Table;
 
 import lombok.Data;
 @Data
-@Entity
+//@Entity
 //@Table(name="ACL_SID")
 public class AclSid {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(scale=100)
+	@Column
 	BigInteger id;
 	@Column(unique=true)
 	boolean principal;
