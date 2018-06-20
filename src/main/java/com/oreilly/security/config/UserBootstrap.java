@@ -2,6 +2,9 @@ package com.oreilly.security.config;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -40,12 +43,14 @@ public class UserBootstrap implements CommandLineRunner{
 		AutoUser janeD = new AutoUser("Jane", "Doe", "jadoe", "password", "janedoe@gmail.com", "ROLE_USER", null);
 		AutoUser juniorD = new AutoUser("Junior", "Doe", "jrdoe", "password", "juniordoe@gmail.com", "ROLE_USER", null);
 		repository.saveAll(Arrays.asList(johnD,janeD,juniorD, kevinM));
+		Service bulb = new Service("Bulb Change");
 		Service oil = new Service("Oil Change");
 		Service tire = new Service("Tire Change");
 		Service antifreeze = new Service("Antifreeze Change");
-		Service bulb = new Service("Bulb Change");
+		
 		serviceRepository.saveAll(Arrays.asList(oil,tire, bulb, antifreeze));
 		populateAppointments(oil, kevinM,janeD);
+		
 		
 	}
 	
@@ -63,5 +68,6 @@ public class UserBootstrap implements CommandLineRunner{
 		}
 
 	}
+
 
 }

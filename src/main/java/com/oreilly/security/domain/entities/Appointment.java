@@ -106,5 +106,8 @@ public class Appointment {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	public Long getId() {
+		return this.appointmentId;
+	}
 
 }

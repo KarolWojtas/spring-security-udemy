@@ -24,12 +24,19 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Configuration
 @EnableGlobalMethodSecurity(securedEnabled=true)
-public class AclConfiguration extends GlobalMethodSecurityConfiguration{
-
+public class AclConfiguration{
+	
 	@Bean
 	public DataSource dataSource() {
 		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
 
+	}
+	@Bean
+	DefaultMethodSecurityExpressionHandler expressionHandler() {
+		DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+		expressionHandler.setPermissionCacheOptimizer(permissionCacheOptimizer());
+		expressionHandler.setPermissionEvaluator(permissionEvaluator());
+		return expressionHandler;
 	}
 	@Bean
 	public SimpleGrantedAuthority adminAuthority() {
@@ -77,13 +84,7 @@ public class AclConfiguration extends GlobalMethodSecurityConfiguration{
 	AclPermissionCacheOptimizer permissionCacheOptimizer() {
 		return new AclPermissionCacheOptimizer(aclService());
 	}
-	@Bean
-	DefaultMethodSecurityExpressionHandler expressionHandler() {
-		DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
-		expressionHandler.setPermissionCacheOptimizer(permissionCacheOptimizer());
-		expressionHandler.setPermissionEvaluator(permissionEvaluator());
-		return expressionHandler;
-	}
+	
 
 
 }

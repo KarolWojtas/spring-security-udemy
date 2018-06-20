@@ -17,6 +17,7 @@ import lombok.Data;
 public class AclSid {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(scale=100)
 	BigInteger id;
 	@Column(unique=true)
 	boolean principal;

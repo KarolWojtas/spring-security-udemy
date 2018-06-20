@@ -85,18 +85,10 @@ insert into AUTO_USER (autoUserId, EMAIL, FIRST_NAME, LAST_NAME, PASSWORD, USERN
 insert into AUTO_USER (autoUserId, EMAIL, FIRST_NAME, LAST_NAME, PASSWORD, USERNAME, ROLE) values (null, 'janedoe@gmail.com', 'Jane', 'Doe', 'password', 'jadoe', 'ROLE_USER');
 insert into AUTO_USER (autoUserId, EMAIL, FIRST_NAME, LAST_NAME, PASSWORD, USERNAME, ROLE) values (null, 'juniordoe@gmail.com', 'Junior', 'Doe', 'password', 'jrdoe', 'ROLE_USER');
 
-insert into APPOINTMENT (APPOINTMENT_ID, APPOINTMENT_DT, MAKE, MODEL, YEAR, USER_ID, STATUS) values (1,'2015-08-12 00:00:00', 'Subaru', 'Impreza', '2015', 1, 'Initial');
-insert into APPOINTMENT (APPOINTMENT_ID, APPOINTMENT_DT, MAKE, MODEL, YEAR, USER_ID, STATUS) values (2,'2015-08-12 00:00:00', 'Subaru', 'Legacy', '2015', 2, 'Initial');
-
-insert into SERVICES (APPOINTMENT_ID, NAME)  values (1, 'Oil Change');
-insert into SERVICES (APPOINTMENT_ID, NAME)  values (1, 'Tire Change');
-insert into SERVICES (APPOINTMENT_ID, NAME)  values (2, 'Antifreeze Change');
-insert into SERVICES (APPOINTMENT_ID, NAME)  values (2, 'Bulb Change');
-
 insert into acl_sid(id,principal,sid) values (1,true,'kbowersox');
 insert into acl_sid(id,principal,sid) values (2,true,'jadoe');
-insert into acl_sid(id,principal,sid) values (3,true,'ROLE_ADMIN');
-insert into acl_sid(id,principal,sid) values (4,true,'ROLE_USER');
+insert into acl_sid(id,principal,sid) values (3,false,'ROLE_ADMIN');
+insert into acl_sid(id,principal,sid) values (4,false,'ROLE_USER');
 
 insert into acl_class(id,class)values(1,'com.oreilly.security.domain.entities.Appointment');
 
@@ -109,7 +101,6 @@ insert into acl_entry(acl_object_identity,ace_order,sid,mask,granting,audit_succ
 	values(1,1,1,1,true,true,true);
 insert into acl_entry(acl_object_identity,ace_order,sid,mask,granting,audit_success,audit_failure)
 	values(2,1,2,1,true,true,true);
-
 
 	
 	

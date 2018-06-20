@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -62,6 +63,7 @@ public class AppointmentController {
 	}
 
 	@RequestMapping("/{appointmentId}")
+	@PostAuthorize("hasPermission(#model['appointment'],'read')")
 	public String getAppointment(@PathVariable("appointmentId") Long appointmentId, Model model){
 		Appointment appointment = appointmentRepository.findById(appointmentId).get();
 		model.addAttribute("appointment", appointment);
